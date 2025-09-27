@@ -3,9 +3,11 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Shield, Phone, GraduationCap, Activity, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./ThemeToggle";
+import { LoginModal } from "./LoginModal";
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
   const location = useLocation();
 
   const isActive = (path: string) => location.pathname === path;
@@ -47,11 +49,12 @@ export function Navigation() {
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
             <ThemeToggle />
-            <Button variant="outline" className="hover:scale-105 transition-transform">
-              Student Login
-            </Button>
-            <Button variant="default" className="bg-gradient-to-r from-primary to-success hover:scale-105 transition-transform">
-              Admin Login
+            <Button 
+              variant="default" 
+              className="bg-gradient-to-r from-primary to-success hover:scale-105 transition-transform"
+              onClick={() => setIsLoginOpen(true)}
+            >
+              Login
             </Button>
           </div>
 
@@ -88,18 +91,22 @@ export function Navigation() {
                   </Button>
                 </Link>
               ))}
-              <div className="pt-4 space-y-2">
-                <Button variant="outline" className="w-full">
-                  Student Login
-                </Button>
-                <Button variant="default" className="w-full bg-gradient-to-r from-primary to-success">
-                  Admin Login
+               <div className="pt-4">
+                <Button 
+                  variant="default" 
+                  className="w-full bg-gradient-to-r from-primary to-success"
+                  onClick={() => setIsLoginOpen(true)}
+                >
+                  Login
                 </Button>
               </div>
             </div>
           </div>
         )}
       </div>
+
+      {/* Login Modal */}
+      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
     </nav>
   );
 }

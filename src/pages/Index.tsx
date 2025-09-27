@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
 import { DisasterAlert } from "@/components/DisasterAlert";
 import { EmergencyChatbot } from "@/components/EmergencyChatbot";
-import heroImage from "@/assets/hero-disaster-management.jpg";
+import heroImage from "@/assets/hero-disaster-response.jpg";
 
 const Index = () => {
   const features = [
@@ -89,13 +89,13 @@ const Index = () => {
                 <Link to="/emergency-contacts">
                   <Button size="lg" variant="outline" className="hover:scale-105 transition-transform">
                     <Phone className="mr-2 h-5 w-5" />
-                    Emergency Contacts
+                    Emergency Tools
                   </Button>
                 </Link>
               </div>
             </div>
             
-            <div className="space-y-4">
+            <div className="space-y-4 relative z-10">
               <DisasterAlert 
                 location="Your Area"
                 disaster="Cyclone Alert"
@@ -195,20 +195,22 @@ const Index = () => {
       </section>
 
       {/* Call to Action */}
-      <section className="py-20 bg-gradient-to-r from-primary/10 to-success/10">
+      <section className="py-16 bg-gradient-to-r from-primary/10 to-success/10">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-4xl font-bold mb-6">
+          <h2 className="text-3xl font-bold mb-4">
             Ready to Build a Safer Tomorrow?
           </h2>
-          <p className="text-lg text-muted-foreground mb-8">
+          <p className="text-lg text-muted-foreground mb-6">
             Join thousands of students and educators who are making their institutions 
             disaster-ready with EduSafe's comprehensive preparedness platform.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-gradient-to-r from-primary to-success hover:scale-105 transition-transform">
-              <Shield className="mr-2 h-5 w-5" />
-              Get Started Now
-            </Button>
+            <Link to="/education">
+              <Button size="lg" className="bg-gradient-to-r from-primary to-success hover:scale-105 transition-transform">
+                <Shield className="mr-2 h-5 w-5" />
+                Get Started Now
+              </Button>
+            </Link>
             <Button size="lg" variant="outline" className="hover:scale-105 transition-transform">
               <BookOpen className="mr-2 h-5 w-5" />
               Learn More

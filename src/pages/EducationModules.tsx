@@ -87,6 +87,11 @@ const EducationModules = () => {
               <Input 
                 placeholder="Search for specific disaster modules..." 
                 className="pl-10"
+                onChange={(e) => {
+                  const searchTerm = e.target.value.toLowerCase();
+                  // Filter modules based on search term
+                  console.log('Searching modules for:', searchTerm);
+                }}
               />
             </div>
           </CardContent>

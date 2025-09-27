@@ -53,13 +53,7 @@ const Dashboard = () => {
           </p>
         </div>
 
-        <Tabs defaultValue="student" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="student">Student View</TabsTrigger>
-            <TabsTrigger value="admin">Admin View</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="student" className="space-y-6">
+        <div className="space-y-6">
             {/* Preparedness Score */}
             <Card className="border-l-4 border-l-primary">
               <CardHeader>
@@ -181,113 +175,7 @@ const Dashboard = () => {
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
-
-          <TabsContent value="admin" className="space-y-6">
-            {/* Admin Stats */}
-            <div className="grid md:grid-cols-4 gap-4">
-              <Card className="text-center">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-2xl text-primary">1,247</CardTitle>
-                  <CardDescription>Total Students</CardDescription>
-                </CardHeader>
-              </Card>
-              <Card className="text-center">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-2xl text-success">89%</CardTitle>
-                  <CardDescription>Average Preparedness</CardDescription>
-                </CardHeader>
-              </Card>
-              <Card className="text-center">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-2xl text-warning">15</CardTitle>
-                  <CardDescription>Scheduled Drills</CardDescription>
-                </CardHeader>
-              </Card>
-              <Card className="text-center">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-2xl text-emergency">92%</CardTitle>
-                  <CardDescription>Participation Rate</CardDescription>
-                </CardHeader>
-              </Card>
-            </div>
-
-            {/* Admin Tools */}
-            <div className="grid md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Calendar className="h-5 w-5" />
-                    <span>Schedule Mock Drill</span>
-                  </CardTitle>
-                  <CardDescription>
-                    Create and schedule new emergency drills
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button className="w-full bg-gradient-to-r from-primary to-success">
-                    <Calendar className="mr-2 h-4 w-4" />
-                    Schedule New Drill
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <TrendingUp className="h-5 w-5" />
-                    <span>Analytics Dashboard</span>
-                  </CardTitle>
-                  <CardDescription>
-                    View detailed progress and attendance reports
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button variant="outline" className="w-full">
-                    <TrendingUp className="mr-2 h-4 w-4" />
-                    View Analytics
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Users className="h-5 w-5" />
-                    <span>Student Management</span>
-                  </CardTitle>
-                  <CardDescription>
-                    Manage student enrollment and progress
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button variant="outline" className="w-full">
-                    <Users className="mr-2 h-4 w-4" />
-                    Manage Students
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Clock className="h-5 w-5" />
-                    <span>Attendance Tracking</span>
-                  </CardTitle>
-                  <CardDescription>
-                    Monitor drill participation and engagement
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button variant="outline" className="w-full">
-                    <Clock className="mr-2 h-4 w-4" />
-                    Track Attendance
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-        </Tabs>
+        </div>
       </div>
     </div>
   );

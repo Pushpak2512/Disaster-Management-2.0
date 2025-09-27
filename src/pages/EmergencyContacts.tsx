@@ -1,5 +1,5 @@
 import { Navigation } from "@/components/Navigation";
-import { Phone, MapPin, Heart, Shield, Flame, Wrench, Radio, Satellite, MessageSquare, Navigation as CompassIcon, Flashlight, Activity, AlertTriangle, Smartphone } from "lucide-react";
+import { Phone, MapPin, Heart, Shield, Flame, Wrench, Radio, Satellite, MessageSquare, Navigation as CompassIcon, Flashlight, Activity, AlertTriangle, Smartphone, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -88,12 +88,14 @@ const EmergencyContacts = () => {
   ];
 
   const handleCall = (number: string) => {
-    if (typeof window !== 'undefined' && window.location.href.includes('mobile')) {
-      window.open(`tel:${number}`, '_self');
-    } else {
-      // For web, show the number
-      alert(`Emergency Number: ${number}\nClick OK to copy to clipboard`);
-      navigator.clipboard.writeText(number);
+    // Always try to open the tel: protocol first
+    window.open(`tel:${number}`, '_self');
+    
+    // Also copy to clipboard as backup
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(number).catch(() => {
+        console.log('Could not copy to clipboard');
+      });
     }
   };
 
@@ -111,6 +113,24 @@ const EmergencyContacts = () => {
             Comprehensive emergency communication systems and tools. Available offline.
           </p>
         </div>
+
+        {/* Search Bar */}
+        <Card className="mb-8">
+          <CardContent className="pt-6">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input 
+                placeholder="Search emergency contacts, services, or utilities..." 
+                className="pl-10"
+                onChange={(e) => {
+                  const searchTerm = e.target.value.toLowerCase();
+                  // Search functionality can be implemented here
+                  console.log('Searching for:', searchTerm);
+                }}
+              />
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Emergency Services Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">

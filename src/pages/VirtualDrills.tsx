@@ -81,6 +81,11 @@ const VirtualDrills = () => {
               <Input 
                 placeholder="Search virtual drills by disaster type..." 
                 className="pl-10"
+                onChange={(e) => {
+                  const searchTerm = e.target.value.toLowerCase();
+                  // Filter drills based on search term
+                  console.log('Searching drills for:', searchTerm);
+                }}
               />
             </div>
           </CardContent>
