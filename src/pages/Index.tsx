@@ -6,9 +6,13 @@ import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
 import { DisasterAlert } from "@/components/DisasterAlert";
 import { EmergencyChatbot } from "@/components/EmergencyChatbot";
+import { LoginModal } from "@/components/LoginModal";
+import { useState } from "react";
 import heroImage from "@/assets/hero-disaster-response.jpg";
 
 const Index = () => {
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  
   const features = [
     {
       icon: GraduationCap,
@@ -205,12 +209,14 @@ const Index = () => {
             disaster-ready with EduSafe's comprehensive preparedness platform.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/education">
-              <Button size="lg" className="bg-gradient-to-r from-primary to-success hover:scale-105 transition-transform">
-                <Shield className="mr-2 h-5 w-5" />
-                Get Started Now
-              </Button>
-            </Link>
+            <Button 
+              size="lg" 
+              className="bg-gradient-to-r from-primary to-success hover:scale-105 transition-transform"
+              onClick={() => setIsLoginModalOpen(true)}
+            >
+              <Shield className="mr-2 h-5 w-5" />
+              Get Started Now
+            </Button>
             <Button size="lg" variant="outline" className="hover:scale-105 transition-transform">
               <BookOpen className="mr-2 h-5 w-5" />
               Learn More
@@ -221,6 +227,12 @@ const Index = () => {
 
       {/* Emergency Chatbot */}
       <EmergencyChatbot />
+      
+      {/* Login Modal */}
+      <LoginModal 
+        isOpen={isLoginModalOpen} 
+        onClose={() => setIsLoginModalOpen(false)} 
+      />
     </div>
   );
 };

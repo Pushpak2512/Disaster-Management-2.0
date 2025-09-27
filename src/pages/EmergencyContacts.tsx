@@ -4,8 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { useState, useMemo } from "react";
 
 const EmergencyContacts = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  
   const emergencyServices = [
     { name: "Emergency Services", number: "112", icon: Shield, color: "bg-emergency" },
     { name: "Fire Department", number: "101", icon: Flame, color: "bg-destructive" },
@@ -87,6 +90,23 @@ const EmergencyContacts = () => {
     }
   ];
 
+  const filteredServices = useMemo(() => {
+    if (!searchTerm) return emergencyServices;
+    return emergencyServices.filter(service => 
+      service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      service.number.includes(searchTerm)
+    );
+  }, [searchTerm]);
+
+  const filteredUtilities = useMemo(() => {
+    if (!searchTerm) return emergencyUtilities;
+    return emergencyUtilities.filter(utility => 
+      utility.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      utility.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      utility.action.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm]);
+
   const handleCall = (number: string) => {
     // Always try to open the tel: protocol first
     window.open(`tel:${number}`, '_self');
@@ -122,11 +142,8 @@ const EmergencyContacts = () => {
               <Input 
                 placeholder="Search emergency contacts, services, or utilities..." 
                 className="pl-10"
-                onChange={(e) => {
-                  const searchTerm = e.target.value.toLowerCase();
-                  // Search functionality can be implemented here
-                  console.log('Searching for:', searchTerm);
-                }}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
           </CardContent>
@@ -134,7 +151,7 @@ const EmergencyContacts = () => {
 
         {/* Emergency Services Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {emergencyServices.map((service, index) => (
+          {filteredServices.map((service, index) => (
             <Card key={index} className="border-l-4 hover:shadow-lg transition-all duration-300">
               <CardHeader className="pb-4">
                 <div className="flex items-center space-x-3">
@@ -218,7 +235,7 @@ const EmergencyContacts = () => {
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {emergencyUtilities.map((utility, index) => (
+              {filteredUtilities.map((utility, index) => (
                 <Card key={index} className={`border transition-all duration-300 hover:shadow-lg ${utility.critical ? 'border-emergency bg-emergency/5' : 'border-border'}`}>
                   <CardContent className="p-4 text-center">
                     <div className={`p-4 rounded-full mx-auto mb-3 w-16 h-16 flex items-center justify-center ${utility.color}`}>

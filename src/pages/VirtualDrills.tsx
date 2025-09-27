@@ -5,8 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState, useMemo } from "react";
 
 const VirtualDrills = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  
   const drills = [
     {
       title: "Earthquake Evacuation Drill",
@@ -58,6 +61,15 @@ const VirtualDrills = () => {
     { rank: 5, name: "Maya Singh", school: "Pune Engineering College", score: 2540, avatar: "👩" }
   ];
 
+  const filteredDrills = useMemo(() => {
+    if (!searchTerm) return drills;
+    return drills.filter(drill => 
+      drill.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      drill.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      drill.difficulty.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm]);
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -81,11 +93,8 @@ const VirtualDrills = () => {
               <Input 
                 placeholder="Search virtual drills by disaster type..." 
                 className="pl-10"
-                onChange={(e) => {
-                  const searchTerm = e.target.value.toLowerCase();
-                  // Filter drills based on search term
-                  console.log('Searching drills for:', searchTerm);
-                }}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
           </CardContent>
@@ -128,7 +137,7 @@ const VirtualDrills = () => {
 
             {/* Drills Grid */}
             <div className="grid md:grid-cols-2 gap-6">
-              {drills.map((drill, index) => (
+              {filteredDrills.map((drill, index) => (
                 <Card key={index} className="border-l-4 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                   <CardHeader>
                     <div className="flex items-center justify-between mb-4">

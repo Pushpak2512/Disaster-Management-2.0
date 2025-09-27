@@ -5,8 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { useState, useMemo } from "react";
 
 const EducationModules = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  
   const modules = [
     {
       title: "Earthquake Safety",
@@ -64,6 +67,15 @@ const EducationModules = () => {
     }
   ];
 
+  const filteredModules = useMemo(() => {
+    if (!searchTerm) return modules;
+    return modules.filter(module => 
+      module.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      module.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      module.difficulty.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm]);
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -87,11 +99,8 @@ const EducationModules = () => {
               <Input 
                 placeholder="Search for specific disaster modules..." 
                 className="pl-10"
-                onChange={(e) => {
-                  const searchTerm = e.target.value.toLowerCase();
-                  // Filter modules based on search term
-                  console.log('Searching modules for:', searchTerm);
-                }}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
           </CardContent>
@@ -127,7 +136,7 @@ const EducationModules = () => {
 
         {/* Modules Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {modules.map((module, index) => (
+          {filteredModules.map((module, index) => (
             <Card key={index} className="border-l-4 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
               <CardHeader>
                 <div className="flex items-center justify-between mb-4">
