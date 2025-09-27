@@ -17,11 +17,33 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 220 91% 50%;
+    --primary-foreground: 0 0% 98%;
 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
+
+    /* Emergency & Safety Colors */
+    --emergency: 0 84% 60%;
+    --emergency-foreground: 0 0% 98%;
+    
+    --warning: 25 95% 53%;
+    --warning-foreground: 0 0% 98%;
+    
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 98%;
+    
+    --safe: 220 91% 50%;
+    --safe-foreground: 0 0% 98%;
+
+    /* Gradients */
+    --gradient-emergency: linear-gradient(135deg, hsl(0 84% 60%), hsl(25 95% 53%));
+    --gradient-hero: linear-gradient(135deg, hsl(220 91% 50%), hsl(142 76% 36%));
+    --gradient-alert: linear-gradient(90deg, hsl(0 84% 60%), hsl(25 95% 53%));
+    
+    /* Shadows */
+    --shadow-emergency: 0 10px 30px -10px hsl(0 84% 60% / 0.3);
+    --shadow-glow: 0 0 40px hsl(220 91% 50% / 0.2);
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
@@ -65,8 +87,30 @@ All colors MUST be HSL.
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 220 91% 60%;
+    --primary-foreground: 222.2 84% 4.9%;
+
+    /* Emergency & Safety Colors - Dark Mode */
+    --emergency: 0 84% 65%;
+    --emergency-foreground: 0 0% 98%;
+    
+    --warning: 25 95% 58%;
+    --warning-foreground: 0 0% 98%;
+    
+    --success: 142 76% 41%;
+    --success-foreground: 0 0% 98%;
+    
+    --safe: 220 91% 55%;
+    --safe-foreground: 0 0% 98%;
+
+    /* Dark mode gradients */
+    --gradient-emergency: linear-gradient(135deg, hsl(0 84% 65%), hsl(25 95% 58%));
+    --gradient-hero: linear-gradient(135deg, hsl(220 91% 55%), hsl(142 76% 41%));
+    --gradient-alert: linear-gradient(90deg, hsl(0 84% 65%), hsl(25 95% 58%));
+    
+    /* Dark mode shadows */
+    --shadow-emergency: 0 10px 30px -10px hsl(0 84% 65% / 0.4);
+    --shadow-glow: 0 0 40px hsl(220 91% 55% / 0.3);
 
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
