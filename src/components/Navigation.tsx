@@ -11,7 +11,7 @@ export function Navigation() {
   const isActive = (path: string) => location.pathname === path;
 
   const navItems = [
-    { path: "/emergency-contacts", label: "Emergency Communication & Tools", icon: Phone },
+    { path: "/emergency-contacts", label: "Emergency Tools", icon: Phone },
     { path: "/education", label: "Education Modules", icon: GraduationCap },
     { path: "/virtual-drills", label: "Virtual Drills", icon: Activity },
     { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },

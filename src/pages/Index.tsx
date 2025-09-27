@@ -1,4 +1,5 @@
 import { Shield, GraduationCap, Activity, Users, Award, BookOpen, Phone, Map } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -79,14 +80,18 @@ const Index = () => {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="bg-gradient-to-r from-primary to-success hover:scale-105 transition-transform">
-                  <GraduationCap className="mr-2 h-5 w-5" />
-                  Start Learning
-                </Button>
-                <Button size="lg" variant="outline" className="hover:scale-105 transition-transform">
-                  <Phone className="mr-2 h-5 w-5" />
-                  Emergency Contacts
-                </Button>
+                <Link to="/education">
+                  <Button size="lg" className="bg-gradient-to-r from-primary to-success hover:scale-105 transition-transform">
+                    <GraduationCap className="mr-2 h-5 w-5" />
+                    Start Learning
+                  </Button>
+                </Link>
+                <Link to="/emergency-contacts">
+                  <Button size="lg" variant="outline" className="hover:scale-105 transition-transform">
+                    <Phone className="mr-2 h-5 w-5" />
+                    Emergency Contacts
+                  </Button>
+                </Link>
               </div>
             </div>
             
