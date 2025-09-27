@@ -21,23 +21,13 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md bg-background border border-border">
         <DialogHeader>
-          <div className="flex items-center justify-between">
-            <div className="text-center flex-1">
-              <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-success bg-clip-text text-transparent">
-                Login to EduSafe
-              </DialogTitle>
-              <DialogDescription className="mt-2">
-                Choose your role to access the disaster preparedness platform
-              </DialogDescription>
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              className="absolute right-4 top-4"
-            >
-              <X className="h-4 w-4" />
-            </Button>
+          <div className="text-center">
+            <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-success bg-clip-text text-transparent">
+              Login to EduSafe
+            </DialogTitle>
+            <DialogDescription className="mt-2">
+              Choose your role to access the disaster preparedness platform
+            </DialogDescription>
           </div>
         </DialogHeader>
 

@@ -1,57 +1,35 @@
-import { useState } from "react";
-import { MessageCircle, X, Send, Bot, AlertTriangle } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { MessageCircle, X, Send, Bot, AlertTriangle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-interface Message {
-  id: string;
-  text: string;
-  sender: "user" | "bot";
-  timestamp: Date;
-}
+import { useAIChat } from "@/hooks/useAIChat";
 
 export function EmergencyChatbot() {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      text: "🚨 Emergency AI Assistant Ready! I can help with disaster preparedness, emergency procedures, and real-time guidance. How can I assist you?",
-      sender: "bot",
-      timestamp: new Date(),
-    },
-  ]);
   const [inputText, setInputText] = useState("");
+  const { messages, isLoading, sendMessage } = useAIChat();
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  const handleSendMessage = () => {
-    if (!inputText.trim()) return;
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      text: inputText,
-      sender: "user",
-      timestamp: new Date(),
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-
-    // Simulate AI response
-    setTimeout(() => {
-      const botResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        text: "I understand your concern. For immediate emergency assistance, please call emergency services at 112. If this is about disaster preparedness, I can guide you through safety protocols. What specific emergency are you facing?",
-        sender: "bot",
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, botResponse]);
-    }, 1000);
-
-    setInputText("");
+  const handleSendMessage = async () => {
+    if (!inputText.trim() || isLoading) return;
+    
+    const messageToSend = inputText;
+    setInputText(""); // Clear input immediately for better UX
+    
+    await sendMessage(messageToSend);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && !isLoading) {
       handleSendMessage();
     }
   };
@@ -104,22 +82,31 @@ export function EmergencyChatbot() {
                       key={message.id}
                       className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
                     >
-                      <div
-                        className={`max-w-[80%] p-3 rounded-lg ${
-                          message.sender === "user"
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted text-muted-foreground"
-                        }`}
-                      >
-                        <p className="text-sm">{message.text}</p>
-                        <p className="text-xs opacity-70 mt-1">
-                          {message.timestamp.toLocaleTimeString()}
-                        </p>
-                      </div>
+                       <div
+                         className={`max-w-[80%] p-3 rounded-lg ${
+                           message.sender === "user"
+                             ? "bg-primary text-primary-foreground"
+                             : "bg-muted text-foreground"
+                         }`}
+                       >
+                         <div className="text-sm whitespace-pre-line">{message.text}</div>
+                         <p className="text-xs opacity-70 mt-1">
+                           {message.timestamp.toLocaleTimeString()}
+                         </p>
+                       </div>
                     </div>
-                  ))}
-                </div>
-              </ScrollArea>
+                   ))}
+                   {isLoading && (
+                     <div className="flex justify-start">
+                       <div className="bg-muted text-foreground p-3 rounded-lg flex items-center space-x-2">
+                         <Loader2 className="h-4 w-4 animate-spin" />
+                         <span className="text-sm">AI is thinking...</span>
+                       </div>
+                     </div>
+                   )}
+                   <div ref={scrollRef} />
+                 </div>
+               </ScrollArea>
 
               {/* Input Area */}
               <div className="p-4 border-t">
@@ -131,13 +118,18 @@ export function EmergencyChatbot() {
                     onKeyPress={handleKeyPress}
                     className="flex-1"
                   />
-                  <Button
-                    onClick={handleSendMessage}
-                    size="icon"
-                    className="bg-emergency hover:bg-emergency/90"
-                  >
-                    <Send className="h-4 w-4" />
-                  </Button>
+                   <Button
+                     onClick={handleSendMessage}
+                     size="icon"
+                     disabled={isLoading}
+                     className="bg-emergency hover:bg-emergency/90 disabled:opacity-50"
+                   >
+                     {isLoading ? (
+                       <Loader2 className="h-4 w-4 animate-spin" />
+                     ) : (
+                       <Send className="h-4 w-4" />
+                     )}
+                   </Button>
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
                   For immediate emergencies, call 112
