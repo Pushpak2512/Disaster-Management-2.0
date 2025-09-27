@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { GraduationCap, Shield, Eye, EyeOff, X } from "lucide-react";
+import { GraduationCap, Shield, Eye, EyeOff, Loader2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -14,8 +16,48 @@ interface LoginModalProps {
 export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [showStudentPassword, setShowStudentPassword] = useState(false);
   const [showAdminPassword, setShowAdminPassword] = useState(false);
-  const [studentEmail, setStudentEmail] = useState("student@college.edu");
-  const [adminEmail, setAdminEmail] = useState("admin@college.edu");
+  const [studentEmail, setStudentEmail] = useState("");
+  const [adminEmail, setAdminEmail] = useState("");
+  const [studentPassword, setStudentPassword] = useState("");
+  const [adminPassword, setAdminPassword] = useState("");
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  
+  const { signIn, signUp, loading } = useAuth();
+  const navigate = useNavigate();
+
+  const handleStudentAuth = async () => {
+    const email = studentEmail.trim();
+    const password = studentPassword.trim();
+    
+    if (!email || !password) return;
+
+    const { error } = isSignUp 
+      ? await signUp(email, password, "student", firstName, lastName)
+      : await signIn(email, password, "student");
+    
+    if (!error) {
+      onClose();
+      navigate("/dashboard");
+    }
+  };
+
+  const handleAdminAuth = async () => {
+    const email = adminEmail.trim();
+    const password = adminPassword.trim();
+    
+    if (!email || !password) return;
+
+    const { error } = isSignUp 
+      ? await signUp(email, password, "admin", firstName, lastName)
+      : await signIn(email, password, "admin");
+    
+    if (!error) {
+      onClose();
+      navigate("/dashboard");
+    }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -44,6 +86,28 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
           </TabsList>
 
           <TabsContent value="student" className="space-y-4 mt-6">
+            {isSignUp && (
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="first-name">First Name</Label>
+                  <Input
+                    id="first-name"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    placeholder="John"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="last-name">Last Name</Label>
+                  <Input
+                    id="last-name"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    placeholder="Doe"
+                  />
+                </div>
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="student-email">Email</Label>
               <Input
@@ -52,6 +116,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 value={studentEmail}
                 onChange={(e) => setStudentEmail(e.target.value)}
                 placeholder="student@college.edu"
+                required
               />
             </div>
             <div className="space-y-2">
@@ -60,7 +125,10 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 <Input
                   id="student-password"
                   type={showStudentPassword ? "text" : "password"}
+                  value={studentPassword}
+                  onChange={(e) => setStudentPassword(e.target.value)}
                   placeholder="Enter your password"
+                  required
                 />
                 <Button
                   type="button"
@@ -73,15 +141,51 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 </Button>
               </div>
             </div>
-            <Button className="w-full bg-gradient-to-r from-primary to-success">
-              Login as Student
+            <Button 
+              className="w-full bg-gradient-to-r from-primary to-success" 
+              onClick={handleStudentAuth}
+              disabled={loading}
+            >
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : null}
+              {isSignUp ? "Sign Up as Student" : "Login as Student"}
             </Button>
             <p className="text-sm text-muted-foreground text-center">
-              Don't have an account? Contact your institution's admin.
+              {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
+              <button
+                type="button"
+                className="text-primary hover:underline"
+                onClick={() => setIsSignUp(!isSignUp)}
+              >
+                {isSignUp ? "Sign In" : "Sign Up"}
+              </button>
             </p>
           </TabsContent>
 
           <TabsContent value="admin" className="space-y-4 mt-6">
+            {isSignUp && (
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="admin-first-name">First Name</Label>
+                  <Input
+                    id="admin-first-name"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    placeholder="John"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="admin-last-name">Last Name</Label>
+                  <Input
+                    id="admin-last-name"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    placeholder="Doe"
+                  />
+                </div>
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="admin-email">Admin Email</Label>
               <Input
@@ -90,6 +194,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 value={adminEmail}
                 onChange={(e) => setAdminEmail(e.target.value)}
                 placeholder="admin@college.edu"
+                required
               />
             </div>
             <div className="space-y-2">
@@ -98,7 +203,10 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 <Input
                   id="admin-password"
                   type={showAdminPassword ? "text" : "password"}
+                  value={adminPassword}
+                  onChange={(e) => setAdminPassword(e.target.value)}
                   placeholder="Enter admin password"
+                  required
                 />
                 <Button
                   type="button"
@@ -111,11 +219,25 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 </Button>
               </div>
             </div>
-            <Button className="w-full bg-gradient-to-r from-emergency to-warning">
-              Login as Admin
+            <Button 
+              className="w-full bg-gradient-to-r from-emergency to-warning"
+              onClick={handleAdminAuth}
+              disabled={loading}
+            >
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : null}
+              {isSignUp ? "Sign Up as Admin" : "Login as Admin"}
             </Button>
             <p className="text-sm text-muted-foreground text-center">
-              Don't have an account? Contact your institution's admin.
+              {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
+              <button
+                type="button"
+                className="text-primary hover:underline"
+                onClick={() => setIsSignUp(!isSignUp)}
+              >
+                {isSignUp ? "Sign In" : "Sign Up"}
+              </button>
             </p>
           </TabsContent>
         </Tabs>

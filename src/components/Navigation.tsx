@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Shield, Phone, GraduationCap, Activity, LayoutDashboard } from "lucide-react";
+import { Menu, X, Shield, Phone, GraduationCap, Activity, LayoutDashboard, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./ThemeToggle";
 import { LoginModal } from "./LoginModal";
+import { useAuth } from "@/contexts/AuthContext";
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const location = useLocation();
+  const { user, signOut } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -49,13 +51,25 @@ export function Navigation() {
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
             <ThemeToggle />
-            <Button 
-              variant="default" 
-              className="bg-gradient-to-r from-primary to-success hover:scale-105 transition-transform"
-              onClick={() => setIsLoginOpen(true)}
-            >
-              Login
-            </Button>
+            {user ? (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={signOut}
+                className="h-9 w-9 hover:scale-110 transition-transform"
+                title="Logout"
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
+            ) : (
+              <Button 
+                variant="default" 
+                className="bg-gradient-to-r from-primary to-success hover:scale-105 transition-transform"
+                onClick={() => setIsLoginOpen(true)}
+              >
+                Login
+              </Button>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -92,13 +106,24 @@ export function Navigation() {
                 </Link>
               ))}
                <div className="pt-4">
-                <Button 
-                  variant="default" 
-                  className="w-full bg-gradient-to-r from-primary to-success"
-                  onClick={() => setIsLoginOpen(true)}
-                >
-                  Login
-                </Button>
+                {user ? (
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start space-x-2"
+                    onClick={signOut}
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span>Logout</span>
+                  </Button>
+                ) : (
+                  <Button 
+                    variant="default" 
+                    className="w-full bg-gradient-to-r from-primary to-success"
+                    onClick={() => setIsLoginOpen(true)}
+                  >
+                    Login
+                  </Button>
+                )}
               </div>
             </div>
           </div>
@@ -106,7 +131,7 @@ export function Navigation() {
       </div>
 
       {/* Login Modal */}
-      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+      {!user && <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />}
     </nav>
   );
 }
