@@ -8,14 +8,10 @@ import { DisasterAlert } from "@/components/DisasterAlert";
 import { EmergencyChatbot } from "@/components/EmergencyChatbot";
 import { LoginModal } from "@/components/LoginModal";
 import { useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
 import heroImage from "@/assets/hero-disaster-response.jpg";
 
 const Index = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const { user } = useAuth();
-  const navigate = useNavigate();
   
   const features = [
     {
@@ -88,23 +84,18 @@ const Index = () => {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button 
-                  size="lg" 
-                  className="bg-gradient-to-r from-primary to-success hover:scale-105 transition-transform"
-                  onClick={() => user ? navigate("/education") : setIsLoginModalOpen(true)}
-                >
-                  <GraduationCap className="mr-2 h-5 w-5" />
-                  Start Learning
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="hover:scale-105 transition-transform"
-                  onClick={() => user ? navigate("/emergency-contacts") : setIsLoginModalOpen(true)}
-                >
-                  <Phone className="mr-2 h-5 w-5" />
-                  Emergency Tools
-                </Button>
+                <Link to="/education">
+                  <Button size="lg" className="bg-gradient-to-r from-primary to-success hover:scale-105 transition-transform">
+                    <GraduationCap className="mr-2 h-5 w-5" />
+                    Start Learning
+                  </Button>
+                </Link>
+                <Link to="/emergency-contacts">
+                  <Button size="lg" variant="outline" className="hover:scale-105 transition-transform">
+                    <Phone className="mr-2 h-5 w-5" />
+                    Emergency Tools
+                  </Button>
+                </Link>
               </div>
             </div>
             
