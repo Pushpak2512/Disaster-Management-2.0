@@ -1,13 +1,28 @@
 import { Navigation } from "@/components/Navigation";
-import { Phone, MapPin, Heart, Shield, Flame, Wrench, Radio, Satellite, MessageSquare, Navigation as CompassIcon, Flashlight, Activity, AlertTriangle, Smartphone, Search } from "lucide-react";
+import { Phone, MapPin, Heart, Shield, Flame, Wrench, Radio, Satellite, MessageSquare, Navigation as CompassIcon, Flashlight, Activity, AlertTriangle, Smartphone, Search, Plus, Edit2, Trash2, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
+interface EmergencyContact {
+  id: string;
+  name: string;
+  phone: string;
+  relationship: string;
+}
 
 const EmergencyContacts = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const { user } = useAuth();
+  const [contacts, setContacts] = useState<EmergencyContact[]>([]);
+  const [newContact, setNewContact] = useState({ name: "", phone: "", relationship: "" });
+  const [editingContact, setEditingContact] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   
   const emergencyServices = [
     { name: "Emergency Services", number: "112", icon: Shield, color: "bg-emergency" },
@@ -106,6 +121,115 @@ const EmergencyContacts = () => {
       utility.action.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [searchTerm]);
+
+  // Fetch user's emergency contacts
+  useEffect(() => {
+    if (user) {
+      fetchContacts();
+    }
+  }, [user]);
+
+  const fetchContacts = async () => {
+    if (!user) return;
+    
+    const { data, error } = await supabase
+      .from('emergency_contacts')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      toast.error("Failed to load contacts");
+      return;
+    }
+
+    setContacts(data || []);
+  };
+
+  const addContact = async () => {
+    if (!user) {
+      toast.error("Please log in to add contacts");
+      return;
+    }
+
+    if (!newContact.name.trim() || !newContact.phone.trim()) {
+      toast.error("Name and phone number are required");
+      return;
+    }
+
+    if (contacts.length >= 4) {
+      toast.error("Maximum 4 contacts allowed");
+      return;
+    }
+
+    setLoading(true);
+
+    const { error } = await supabase
+      .from('emergency_contacts')
+      .insert({
+        user_id: user.id,
+        name: newContact.name.trim(),
+        phone: newContact.phone.trim(),
+        relationship: newContact.relationship.trim() || null
+      });
+
+    setLoading(false);
+
+    if (error) {
+      toast.error("Failed to add contact");
+      return;
+    }
+
+    toast.success("Contact added successfully");
+    setNewContact({ name: "", phone: "", relationship: "" });
+    fetchContacts();
+  };
+
+  const updateContact = async (id: string) => {
+    const contact = contacts.find(c => c.id === id);
+    if (!contact) return;
+
+    setLoading(true);
+
+    const { error } = await supabase
+      .from('emergency_contacts')
+      .update({
+        name: contact.name.trim(),
+        phone: contact.phone.trim(),
+        relationship: contact.relationship.trim() || null
+      })
+      .eq('id', id);
+
+    setLoading(false);
+
+    if (error) {
+      toast.error("Failed to update contact");
+      return;
+    }
+
+    toast.success("Contact updated successfully");
+    setEditingContact(null);
+    fetchContacts();
+  };
+
+  const deleteContact = async (id: string) => {
+    setLoading(true);
+
+    const { error } = await supabase
+      .from('emergency_contacts')
+      .delete()
+      .eq('id', id);
+
+    setLoading(false);
+
+    if (error) {
+      toast.error("Failed to delete contact");
+      return;
+    }
+
+    toast.success("Contact deleted successfully");
+    fetchContacts();
+  };
 
   const handleCall = (number: string) => {
     // Always try to open the tel: protocol first
@@ -260,19 +384,147 @@ const EmergencyContacts = () => {
         {/* Personal Emergency Contacts */}
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle>Personal Emergency Contacts</CardTitle>
+            <CardTitle className="flex items-center space-x-2">
+              <User className="h-5 w-5" />
+              <span>Personal Emergency Contacts</span>
+            </CardTitle>
             <CardDescription>
-              Add your personal emergency contacts for quick access
+              {user ? `Add up to 4 personal emergency contacts (${contacts.length}/4)` : "Please log in to add emergency contacts"}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid md:grid-cols-2 gap-4">
-              <Input placeholder="Contact Name" />
-              <Input placeholder="Phone Number" />
-            </div>
-            <Button variant="outline" className="w-full">
-              Add Contact
-            </Button>
+            {!user ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <p>You must be logged in to manage emergency contacts</p>
+              </div>
+            ) : (
+              <>
+                {/* Existing Contacts */}
+                {contacts.length > 0 && (
+                  <div className="space-y-3 mb-6">
+                    {contacts.map((contact) => (
+                      <Card key={contact.id} className="border-border">
+                        <CardContent className="p-4">
+                          {editingContact === contact.id ? (
+                            <div className="space-y-3">
+                              <div className="grid md:grid-cols-3 gap-3">
+                                <Input
+                                  placeholder="Name *"
+                                  value={contact.name}
+                                  onChange={(e) => setContacts(contacts.map(c => 
+                                    c.id === contact.id ? { ...c, name: e.target.value } : c
+                                  ))}
+                                />
+                                <Input
+                                  placeholder="Phone *"
+                                  value={contact.phone}
+                                  onChange={(e) => setContacts(contacts.map(c => 
+                                    c.id === contact.id ? { ...c, phone: e.target.value } : c
+                                  ))}
+                                />
+                                <Input
+                                  placeholder="Relationship"
+                                  value={contact.relationship}
+                                  onChange={(e) => setContacts(contacts.map(c => 
+                                    c.id === contact.id ? { ...c, relationship: e.target.value } : c
+                                  ))}
+                                />
+                              </div>
+                              <div className="flex space-x-2">
+                                <Button 
+                                  size="sm" 
+                                  onClick={() => updateContact(contact.id)}
+                                  disabled={loading}
+                                >
+                                  Save
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="outline" 
+                                  onClick={() => {
+                                    setEditingContact(null);
+                                    fetchContacts();
+                                  }}
+                                >
+                                  Cancel
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1">
+                                <h4 className="font-semibold">{contact.name}</h4>
+                                <p className="text-sm text-muted-foreground">{contact.phone}</p>
+                                {contact.relationship && (
+                                  <Badge variant="secondary" className="mt-1">{contact.relationship}</Badge>
+                                )}
+                              </div>
+                              <div className="flex space-x-2">
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => handleCall(contact.phone)}
+                                >
+                                  <Phone className="h-4 w-4" />
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => setEditingContact(contact.id)}
+                                >
+                                  <Edit2 className="h-4 w-4" />
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => deleteContact(contact.id)}
+                                  disabled={loading}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+
+                {/* Add New Contact Form */}
+                {contacts.length < 4 && (
+                  <div className="space-y-4 p-4 border rounded-lg bg-muted/30">
+                    <h4 className="font-medium">Add New Contact</h4>
+                    <div className="grid md:grid-cols-3 gap-4">
+                      <Input
+                        placeholder="Name *"
+                        value={newContact.name}
+                        onChange={(e) => setNewContact({ ...newContact, name: e.target.value })}
+                      />
+                      <Input
+                        placeholder="Phone *"
+                        value={newContact.phone}
+                        onChange={(e) => setNewContact({ ...newContact, phone: e.target.value })}
+                      />
+                      <Input
+                        placeholder="Relationship (optional)"
+                        value={newContact.relationship}
+                        onChange={(e) => setNewContact({ ...newContact, relationship: e.target.value })}
+                      />
+                    </div>
+                    <Button 
+                      variant="default" 
+                      className="w-full"
+                      onClick={addContact}
+                      disabled={loading}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Contact
+                    </Button>
+                  </div>
+                )}
+              </>
+            )}
           </CardContent>
         </Card>
 
